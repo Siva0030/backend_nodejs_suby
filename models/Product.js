@@ -20,7 +20,7 @@ const productSchema = new mongoose.Schema({
 
     },
     bestseller: {
-        type: String
+        type: Boolean
     },
     description: {
         type: String

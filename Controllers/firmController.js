@@ -26,14 +26,23 @@ const addFirm = async (req, res) => {
         if (!vendor) {
             res.status(404).json({ message: "vendor not found" })
         }
+        if (vendor.firm.length > 0) {
+            return res.status(400).json({ message: "vendor can have only one firm" })
+        }
+
         const firm = new Firm({
             firmName, area, category, region, offer, image, vendor: vendor._id
         })
-        const saveFirm = await firm.save();
-        vendor.firm.push(saveFirm)
+
+        const savedFirm = await firm.save();
+        const firmId = savedFirm._id
+
+        vendor.firm.push(savedFirm)
         await vendor.save()
 
-        return res.status(200).json({ message: "firm Added successfully" })
+
+
+        return res.status(200).json({ message: "firm Added successfully", firmId })
 
     } catch (error) {
         console.error(error)
@@ -42,20 +51,20 @@ const addFirm = async (req, res) => {
     }
 }
 
-const deleteFirmById = async(req, res)=>{
+const deleteFirmById = async (req, res) => {
     try {
         const firmId = req.params.firmId;
         const deletedProduct = await Firm.findByIdAndDelete(firmId);
-        if(!deletedProduct){
-            return res.status(404).json({error:"No product found"})
+        if (!deletedProduct) {
+            return res.status(404).json({ error: "No product found" })
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({error:"Internal server error"})
-        
+        res.status(500).json({ error: "Internal server error" })
+
     }
 }
 
 
 
-module.exports = { addFirm: [upload.single('image'), addFirm],deleteFirmById }
+module.exports = { addFirm: [upload.single('image'), addFirm], deleteFirmById }
